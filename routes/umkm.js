@@ -1,11 +1,13 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { requireAuth } from '../index.js'; // Import proteksi admin
+import { requireAuth } from '../middleware/auth.js'; // Mengimpor dari middleware/auth.js
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// ==========================================
 // 1. GET: Ambil Semua Data UMKM (Publik)
+// ==========================================
 router.get('/', async (req, res) => {
   try {
     const umkmList = await prisma.umkm.findMany({
@@ -17,7 +19,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 2. GET: Detail 1 UMKM berdasarkan ID
+// ==========================================
+// 2. GET: Detail 1 UMKM berdasarkan ID (Publik)
+// ==========================================
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -29,7 +33,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// ==========================================
 // 3. POST: Tambah Data UMKM (Proteksi Admin)
+// ==========================================
 router.post('/', requireAuth, async (req, res) => {
   const { namaProduk, namaPemilik, deskripsi, harga, kontenWa, gambarUrl } = req.body;
 
@@ -50,7 +56,9 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
+// ==========================================
 // 4. PUT: Update Data UMKM (Proteksi Admin)
+// ==========================================
 router.put('/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   const { namaProduk, namaPemilik, deskripsi, harga, kontenWa, gambarUrl } = req.body;
@@ -73,7 +81,9 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
+// ==========================================
 // 5. DELETE: Hapus Data UMKM (Proteksi Admin)
+// ==========================================
 router.delete('/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   try {

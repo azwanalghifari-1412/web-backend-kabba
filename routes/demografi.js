@@ -1,10 +1,13 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { requireAuth } from '../middleware/auth.js'; // Mengimpor middleware proteksi
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// ==========================================
 // 1. GET: Ambil Semua Data Demografi (Publik)
+// ==========================================
 router.get('/', async (req, res) => {
   try {
     const data = await prisma.demografi.findMany();
@@ -14,12 +17,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ==========================================
 // 2. POST: Tambah Data Demografi Baru (Proteksi Admin)
-router.post('/', async (req, res) => {
+// ==========================================
+router.post('/', requireAuth, async (req, res) => {
   const { kategori, label, jumlah } = req.body;
   try {
     const dataBaru = await prisma.demografi.create({
-      data: { kategori, label, jumlah: parseInt(jumlah) }
+      data: { 
+        kategori, 
+        label, 
+        jumlah: parseInt(jumlah) 
+      }
     });
     res.status(201).json({ success: true, message: 'Data demografi berhasil ditambahkan', data: dataBaru });
   } catch (error) {
@@ -27,14 +36,20 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 3. PUT: Update Data Demografi berdasarkan ID
-router.put('/:id', async (req, res) => {
+// ==========================================
+// 3. PUT: Update Data Demografi berdasarkan ID (Proteksi Admin)
+// ==========================================
+router.put('/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   const { kategori, label, jumlah } = req.body;
   try {
     const dataUpdated = await prisma.demografi.update({
       where: { id: id },
-      data: { kategori, label, jumlah: parseInt(jumlah) }
+      data: { 
+        kategori, 
+        label, 
+        jumlah: parseInt(jumlah) 
+      }
     });
     res.json({ success: true, message: 'Data demografi diperbarui', data: dataUpdated });
   } catch (error) {
@@ -42,11 +57,15 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// 4. DELETE: Hapus Data Demografi berdasarkan ID
-router.delete('/:id', async (req, res) => {
+// ==========================================
+// 4. DELETE: Hapus Data Demografi berdasarkan ID (Proteksi Admin)
+// ==========================================
+router.delete('/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   try {
-    await prisma.demografi.delete({ where: { id: id } });
+    await prisma.demografi.delete({ 
+      where: { id: id } 
+    });
     res.json({ success: true, message: 'Data demografi berhasil dihapus' });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });

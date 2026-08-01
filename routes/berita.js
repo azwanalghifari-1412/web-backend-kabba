@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { requireAuth } from '../index.js'; // Mengimpor middleware proteksi dari index.js
+import { requireAuth } from '../middleware/auth.js'; // Mengimpor dari middleware/auth.js
 
 const router = express.Router();
 const prisma = new PrismaClient();

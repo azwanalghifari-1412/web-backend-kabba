@@ -1,11 +1,13 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { requireAuth } from '../index.js';
+import { requireAuth } from '../middleware/auth.js'; // Mengimpor dari middleware/auth.js
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// ==========================================
 // 1. GET: Ambil Semua Data Aparatur Desa (Publik - Terurut berdasarkan field 'urutan')
+// ==========================================
 router.get('/', async (req, res) => {
   try {
     const listAparatur = await prisma.aparatur.findMany({
@@ -17,7 +19,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 2. GET: Detail 1 Aparatur berdasarkan ID
+// ==========================================
+// 2. GET: Detail 1 Aparatur berdasarkan ID (Publik)
+// ==========================================
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -29,7 +33,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// ==========================================
 // 3. POST: Tambah Aparatur Desa Baru (Proteksi Admin)
+// ==========================================
 router.post('/', requireAuth, async (req, res) => {
   const { nama, jabatan, fotoUrl, urutan } = req.body;
 
@@ -48,7 +54,9 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
+// ==========================================
 // 4. PUT: Update Data Aparatur (Proteksi Admin)
+// ==========================================
 router.put('/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   const { nama, jabatan, fotoUrl, urutan } = req.body;
@@ -69,7 +77,9 @@ router.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
+// ==========================================
 // 5. DELETE: Hapus Data Aparatur (Proteksi Admin)
+// ==========================================
 router.delete('/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   try {
