@@ -14,13 +14,13 @@ dotenv.config();
 
 const app = express();
 
-// Inisialisasi Supabase Client untuk Auth
+// Inisialisasi Supabase Client untuk Auth Login
 export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
 
-// Middleware
+// Middleware Global
 app.use(cors());
 app.use(express.json());
 
@@ -45,37 +45,24 @@ app.post('/api/auth/login', async (req, res) => {
   });
 });
 
-// --- 2. MIDDLEWARE PROTEKSI AUTH (EXPORTABLE) ---
-export const requireAuth = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Akses ditolak. Token tidak ditemukan.' });
-  }
-
-  const token = authHeader.split(' ')[1];
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-
-  if (error || !user) {
-    return res.status(403).json({ message: 'Token tidak valid atau kedaluwarsa.' });
-  }
-
-  req.user = user;
-  next();
-};
-
-// --- 3. REGISTRASI RUTE MODULAR ---
+// --- 2. REGISTRASI RUTE MODULAR ---
 app.use('/api/berita', beritaRoutes);
 app.use('/api/demografi', demografiRoutes);
-app.use('/api/umkm', umkmRoutes);       // <-- Tambahkan ini
-app.use('/api/wisata', wisataRoutes);   // <-- Tambahkan ini
-app.use('/api/aparatur', aparaturRoutes); // <-- Tambahkan ini
+app.use('/api/umkm', umkmRoutes);
+app.use('/api/wisata', wisataRoutes);
+app.use('/api/aparatur', aparaturRoutes);
 
 // Test Endpoint Root
 app.get('/', (req, res) => {
   res.send('API Desa Kabba Aktif & Berjalan!');
 });
 
+// Listener Port & Serverless Export untuk Vercel
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Backend Desa Kabba aktif di http://localhost:${PORT}`);
-}); 
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Backend Desa Kabba aktif di http://localhost:${PORT}`);
+  });
+}
+
+export default app;
