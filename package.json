@@ -1,0 +1,24 @@
+{
+  "name": "web-backend-kabba",
+  "version": "1.0.0",
+  "description": "Backend Web Desa Kabba",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prisma/client": "^6.19.3",
+    "prisma": "^6.19.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.111.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
